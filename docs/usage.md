@@ -1,26 +1,26 @@
-# Tailscale Home Assistant 附加元件使用指南
+# Tailscale 附加元件使用指南
 
-本指南將幫助您了解如何有效使用 Tailscale Home Assistant 附加元件來增強您的智能家居體驗。
+本指南將幫助您了解如何有效使用 Tailscale 附加元件來增強您的智能設備體驗。
 
 ## 基本用途
 
 安裝並配置 Tailscale 附加元件後，您可以：
 
-1. **遠程訪問您的 Home Assistant 實例**：
-   - 從任何安裝了 Tailscale 的設備上，您可以通過 Tailscale IP 地址訪問您的 Home Assistant 實例。
-   - 如果啟用了 MagicDNS，您可以使用類似 `homeassistant` 的主機名訪問。
+1. **遠程訪問您的設備**：
+   - 從任何安裝了 Tailscale 的設備上，您可以通過 Tailscale IP 地址訪問您的智能設備。
+   - 如果啟用了 MagicDNS，您可以使用類似 `yourdevice` 的主機名訪問。
 
 2. **安全訪問您的本地網絡**：
    - 如果您配置了子網路由，您可以從任何 Tailscale 連接的設備訪問您的本地網絡中的設備。
 
 3. **使用出口節點功能**：
-   - 讓您的 Home Assistant 實例充當 VPN 出口節點，允許您在不信任的網絡上安全瀏覽互聯網。
+   - 讓您的設備充當 VPN 出口節點，允許您在不信任的網絡上安全瀏覽互聯網。
 
 ## 常見使用場景
 
-### 場景 1：遠程訪問 Home Assistant
+### 場景 1：遠程訪問設備
 
-當您不在家但需要訪問您的 Home Assistant 時：
+當您不在家但需要訪問您的設備時：
 
 1. 在您的移動設備或計算機上安裝 Tailscale 客戶端：
    - [Android](https://play.google.com/store/apps/details?id=com.tailscale.ipn)
@@ -31,9 +31,9 @@
 
 2. 使用您的 Tailscale 帳戶登錄客戶端
 
-3. 連接成功後，打開瀏覽器並訪問您的 Home Assistant：
+3. 連接成功後，打開瀏覽器並訪問您的設備：
    - 使用 Tailscale IP 地址：`http://100.x.y.z:8123`（具體 IP 在您的 Tailscale 管理控制台中可見）
-   - 或者，如果啟用了 MagicDNS：`http://homeassistant:8123`
+   - 或者，如果啟用了 MagicDNS：`http://yourdevice:8123`
 
 ### 場景 2：訪問本地網絡設備
 
@@ -56,7 +56,7 @@
 
 3. 在您的設備上（例如筆記本電腦或手機）：
    - 打開 Tailscale 客戶端
-   - 選擇您的 Home Assistant 實例作為出口節點
+   - 選擇您的主設備作為出口節點
    - 所有互聯網流量現在將通過您的家庭網絡路由
 
 ## 高級功能
@@ -67,24 +67,24 @@ Taildrop 允許您在 Tailscale 設備之間發送文件：
 
 1. 確保在附加元件配置中啟用了 `taildrop` 選項
 
-2. 要向您的 Home Assistant 實例發送文件：
+2. 要向您的設備發送文件：
    - 在支持 Taildrop 的 Tailscale 客戶端上，選擇要發送的文件
-   - 選擇您的 Home Assistant 實例作為目標
+   - 選擇您的設備作為目標
    - 文件將被發送並存儲在 `/share/taildrop` 目錄中
 
 ### Tailscale Funnel 公共訪問
 
-如果您想從沒有 Tailscale 的設備訪問您的 Home Assistant：
+如果您想從沒有 Tailscale 的設備訪問您的設備：
 
 1. 在附加元件配置中啟用 `proxy` 和 `funnel` 選項
 
-2. 按照 [配置指南](configuration.md) 中的步驟配置 Home Assistant 的 HTTP 集成
+2. 按照 [配置指南](configuration.md) 中的步驟配置 HTTP 集成
 
 3. 在 Tailscale 管理控制台的訪問控制頁面添加必要的 `funnel` 節點屬性
 
 4. 重新啟動附加元件
 
-5. 現在，您可以通過您的 Tailscale 域名（如 `https://homeassistant.tail1234.ts.net`）訪問您的 Home Assistant 實例，即使在沒有安裝 Tailscale 的設備上也可以
+5. 現在，您可以通過您的 Tailscale 域名（如 `https://yourdevice.tail1234.ts.net`）訪問您的設備，即使在沒有安裝 Tailscale 的裝置上也可以
 
 ## 提示和技巧
 
@@ -94,7 +94,7 @@ Taildrop 允許您在 Tailscale 設備之間發送文件：
 
 3. **標籤**：使用標籤來組織和管理設備，特別是在具有多個設備的複雜設置中。
 
-4. **密鑰輪換**：考慮為敏感設備，如您的 Home Assistant 實例，禁用密鑰過期，以避免意外失去訪問權限。
+4. **密鑰輪換**：考慮為敏感設備禁用密鑰過期，以避免意外失去訪問權限。
 
 5. **設備批准**：配置 Tailscale 以要求管理員批准新設備，增加安全層級。
 

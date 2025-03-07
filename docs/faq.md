@@ -1,6 +1,6 @@
-# Tailscale Home Assistant 附加元件常見問題
+# Tailscale 附加元件常見問題
 
-本文檔回答了關於 Tailscale Home Assistant 附加元件的常見問題。
+本文檔回答了關於 Tailscale 附加元件的常見問題。
 
 ## 基本問題
 
@@ -17,12 +17,12 @@ Tailscale 相比傳統 VPN 有幾個主要優勢：
 - **基於身份的網絡**：使用現代身份提供者進行認證
 - **精細的訪問控制**：可以精確控制誰可以訪問哪些資源
 
-### Tailscale 對於 Home Assistant 用戶有什麼好處？
+### Tailscale 對於用戶有什麼好處？
 
 - **安全的遠程訪問**：無需開放您的家庭網絡或配置端口轉發
-- **簡化的移動訪問**：從任何地方輕鬆訪問您的 Home Assistant 實例
+- **簡化的移動訪問**：從任何地方輕鬆訪問您的設備
 - **增強的隱私**：所有連接都是端到端加密的
-- **子網路由**：可以訪問您的整個家庭網絡中的其他設備
+- **子網路由**：可以訪問您的整個網絡中的其他設備
 - **跨平台支持**：適用於所有主要操作系統和設備
 
 ## 安裝和設置
@@ -45,7 +45,7 @@ Tailscale 提供免費和付費計劃：
 
 ### 我如何更新 Tailscale 附加元件？
 
-附加元件可以通過 Home Assistant 的標準附加元件界面更新。當有新版本可用時，您會在 Home Assistant 的附加元件部分看到更新通知。
+附加元件可以通過標準附加元件界面更新。當有新版本可用時，您會在附加元件部分看到更新通知。
 
 ## 使用和功能
 
@@ -66,32 +66,32 @@ MagicDNS 是 Tailscale 的一項功能，允許您使用設備名稱而不是 IP
 2. 前往 DNS 設置
 3. 啟用 MagicDNS
 
-### 我應該將 Home Assistant 配置為出口節點嗎？
+### 我應該將我的設備配置為出口節點嗎？
 
-將您的 Home Assistant 實例配置為出口節點可以讓您從任何地方通過您的家庭網絡路由互聯網流量。這在使用不受信任的網絡（如公共 Wi-Fi）時非常有用。
+將您的設備配置為出口節點可以讓您從任何地方通過您的網絡路由互聯網流量。這在使用不受信任的網絡（如公共 Wi-Fi）時非常有用。
 
 考慮因素：
 - **優點**：增強隱私，繞過地理限制
-- **缺點**：增加您的家庭網絡的帶寬使用，可能影響性能
+- **缺點**：增加您的網絡的帶寬使用，可能影響性能
 
-### Tailscale 與 Nabu Casa 遠程訪問相比如何？
+### Tailscale 與其他遠程訪問解決方案相比如何？
 
-Tailscale 和 Nabu Casa 提供不同的遠程訪問方法：
+Tailscale 和其他解決方案提供不同的遠程訪問方法：
 
-- **Nabu Casa**：
-  - 官方支持的 Home Assistant 遠程訪問解決方案
-  - 包括 SSL 證書和簡單的設置
-  - 是一種支持 Home Assistant 項目的訂閱服務
+- **其他方案**：
+  - 可能包括官方支持的遠程訪問解決方案
+  - 可能包括 SSL 證書和簡單的設置
+  - 可能是訂閱服務
 
 - **Tailscale**：
-  - 更通用的 VPN 解決方案，不僅限於 Home Assistant
-  - 提供對整個家庭網絡的訪問
+  - 更通用的 VPN 解決方案，不僅限於特定應用
+  - 提供對整個網絡的訪問
   - 基本使用免費
   - 需要在每個客戶端設備上安裝 Tailscale
 
 ## 故障排除
 
-### 附加元件啟動了，但我無法連接到我的 Home Assistant 實例
+### 附加元件啟動了，但我無法連接到我的設備
 
 檢查以下幾點：
 1. 確保您的設備已連接到相同的 Tailscale 帳戶
@@ -111,14 +111,14 @@ Tailscale 和 Nabu Casa 提供不同的遠程訪問方法：
 
 如果 MagicDNS 不起作用：
 1. 確保在 Tailscale 管理控制台中啟用了 MagicDNS
-2. 如果您使用的是 Pi-hole 或 AdGuard Home，考慮禁用附加元件中的 `accept_dns` 選項
+2. 如果您使用的是 Pi-hole 或 AdGuard，考慮禁用附加元件中的 `accept_dns` 選項
 3. 檢查網絡連接問題
 4. 嘗試重新啟動 Tailscale 附加元件
 
 ### Tailscale Funnel 功能不工作
 
 如果您已設置 Tailscale Funnel 但無法從外部訪問：
-1. 確保您正確配置了 Home Assistant 的 `configuration.yaml` 中的 HTTP 集成
+1. 確保您正確配置了配置文件中的 HTTP 集成
 2. 檢查您是否在 Tailscale 管理控制台中設置了必要的 ACL 策略
 3. 注意 Funnel 設置後可能需要長達 10 分鐘才能生效
 4. 嘗試清除瀏覽器緩存和 cookie
@@ -145,7 +145,7 @@ Tailscale 的設計注重隱私：
 
 Tailscale 客戶端的大部分代碼是開源的，可在 [GitHub](https://github.com/tailscale) 上找到。然而，某些組件和控制服務器代碼是專有的。Tailscale 基於開源的 [WireGuard](https://www.wireguard.com/) 協議。
 
-### Tailscale 如何提高我的 Home Assistant 安全性？
+### Tailscale 如何提高我的安全性？
 
 Tailscale 通過以下方式提高安全性：
 - 無需開放端口或設置端口轉發，減少了攻擊面
@@ -188,13 +188,13 @@ Tailscale 支持多種操作系統，包括：
 - OpenBSD
 - 各種 NAS 系統（Synology、QNAP 等）
 
-### Tailscale 是否能與其他 Home Assistant 附加元件一起工作？
+### Tailscale 是否能與其他附加元件一起工作？
 
-是的，Tailscale 通常可以與其他 Home Assistant 附加元件一起使用。不過，與其他網絡相關的附加元件（如其他 VPN 解決方案）可能需要特別注意配置，以避免衝突。
+是的，Tailscale 通常可以與其他附加元件一起使用。不過，與其他網絡相關的附加元件（如其他 VPN 解決方案）可能需要特別注意配置，以避免衝突。
 
-### 如何將 Tailscale 與我的 DNS 設置（如 Pi-hole 或 AdGuard Home）整合？
+### 如何將 Tailscale 與我的 DNS 設置（如 Pi-hole 或 AdGuard）整合？
 
-如果您使用 Pi-hole 或 AdGuard Home：
+如果您使用 Pi-hole 或 AdGuard：
 1. 在附加元件配置中禁用 `accept_dns` 選項
 2. 在您的 DNS 服務中添加 `100.100.100.100`（Tailscale 的 DNS 服務器）作為上游 DNS 服務器
 3. 確保您的 Tailscale 設備配置為使用您的本地 DNS 服務器
@@ -206,14 +206,14 @@ Tailscale 支持多種操作系統，包括：
 - [Tailscale 官方文檔](https://tailscale.com/kb/)
 - [Tailscale GitHub 存儲庫](https://github.com/tailscale)
 - [Tailscale 博客](https://tailscale.com/blog/)
-- [Home Assistant 社區論壇](https://community.home-assistant.io/)
+- [社區論壇](https://community.home-assistant.io/)
 
 ### 如何報告問題或請求功能？
 
 - 對於 Tailscale 附加元件相關問題：在 [GitHub 問題跟踪器](https://github.com/hassio-addons/addon-tailscale/issues) 提交問題
 - 對於 Tailscale 服務相關問題：聯繫 [Tailscale 支持](https://tailscale.com/contact/support/)
-- 對於功能請求：可以在 GitHub 存儲庫上提出，或參與 Home Assistant 社區討論
+- 對於功能請求：可以在 GitHub 存儲庫上提出，或參與社區討論
 
 ### 這個附加元件是官方的嗎？
 
-這是 Home Assistant 社區附加元件，而不是官方的 Home Assistant 核心集成。它由 Home Assistant 社區成員創建和維護，而不是 Tailscale 或 Home Assistant 團隊直接維護。然而，它是一個廣泛使用和良好支持的附加元件。 
+這是社區附加元件，而不是官方的核心集成。它由社區成員創建和維護，而不是 Tailscale 團隊直接維護。然而，它是一個廣泛使用和良好支持的附加元件。 

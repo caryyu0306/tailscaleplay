@@ -1,6 +1,6 @@
-# Tailscale Home Assistant 附加元件配置指南
+# Tailscale 附加元件配置指南
 
-本文檔介紹了 Tailscale 附加元件的配置選項。適當的配置可以幫助您充分利用 Tailscale 在 Home Assistant 環境中的功能。
+本文檔介紹了 Tailscale 附加元件的配置選項。適當的配置可以幫助您充分利用 Tailscale 功能。
 
 ## 基本配置
 
@@ -8,7 +8,7 @@ Tailscale 附加元件本身的配置選項相對較少。大部分 Tailscale �
 
 附加元件公開了"出口節點"功能，您可以從 Tailscale 帳戶啟用該功能。此外，如果 Supervisor 管理您的網絡（這是默認設置），附加元件還將向 Tailscale 通告您所有支持的接口上子網的路由。
 
-考慮禁用密鑰過期以避免失去與您的 Home Assistant 設備的連接。有關更多信息，請參閱 [密鑰過期](https://tailscale.com/kb/1028/key-expiry)。
+考慮禁用密鑰過期以避免失去與您的設備的連接。有關更多信息，請參閱 [密鑰過期](https://tailscale.com/kb/1028/key-expiry)。
 
 ## YAML 配置參考
 
@@ -31,7 +31,7 @@ snat_subnet_routes: true
 stateful_filtering: false
 tags:
   - tag:example
-  - tag:homeassistant
+  - tag:tailscale
 taildrop: true
 userspace_networking: true
 ```
@@ -46,7 +46,7 @@ userspace_networking: true
 
 未設置時，此選項默認啟用。
 
-如果您在與此附加元件相同的機器上運行 Pi-hole 或 AdGuard Home 等服務，MagicDNS 可能會導致問題。在這種情況下，禁用 `accept_dns` 將會有所幫助。您仍然可以在網絡上的其他設備上利用 MagicDNS，方法是在 Pi-hole 或 AdGuard Home 中添加 `100.100.100.100` 作為 DNS 服務器。
+如果您在與此附加元件相同的機器上運行 Pi-hole 或 AdGuard 等服務，MagicDNS 可能會導致問題。在這種情況下，禁用 `accept_dns` 將會有所幫助。您仍然可以在網絡上的其他設備上利用 MagicDNS，方法是在 Pi-hole 或 AdGuard 中添加 `100.100.100.100` 作為 DNS 服務器。
 
 ### 選項：`accept_routes`
 
@@ -92,15 +92,15 @@ userspace_networking: true
 
 這需要啟用 Tailscale 代理。
 
-**重要**：請同時參閱本文檔的"選項：`proxy`"部分，了解 Home Assistant 中必要的配置更改！
+**重要**：請同時參閱本文檔的"選項：`proxy`"部分，了解配置中必要的配置更改！
 
 未設置時，此選項默認禁用。
 
-使用 Tailscale Funnel 功能，您可以使用您的 Tailscale 域名（如 `https://homeassistant.tail1234.ts.net`）從更廣泛的互聯網訪問您的 Home Assistant 實例，甚至從**沒有安裝 Tailscale VPN 客戶端**的設備（例如，一般的手機、平板電腦和筆記本電腦）。
+使用 Tailscale Funnel 功能，您可以使用您的 Tailscale 域名（如 `https://yourdevice.tail1234.ts.net`）從更廣泛的互聯網訪問您的設備，甚至從**沒有安裝 Tailscale VPN 客戶端**的設備（例如，一般的手機、平板電腦和筆記本電腦）。
 
-**客戶端** → _互聯網_ → **Tailscale Funnel**（TCP 代理）→ _VPN_ → **Tailscale 代理**（HTTPS 代理）→ **HA**（HTTP 網絡服務器）
+**客戶端** → _互聯網_ → **Tailscale Funnel**（TCP 代理）→ _VPN_ → **Tailscale 代理**（HTTPS 代理）→ **設備**（HTTP 網絡服務器）
 
-如果沒有 Tailscale Funnel 功能，您只能在設備（例如，手機、平板電腦和筆記本電腦）連接到 Tailscale VPN 時訪問您的 Home Assistant 實例，不會有互聯網 → VPN TCP 代理用於 HTTPS 通信。
+如果沒有 Tailscale Funnel 功能，您只能在設備（例如，手機、平板電腦和筆記本電腦）連接到 Tailscale VPN 時訪問您的設備，不會有互聯網 → VPN TCP 代理用於 HTTPS 通信。
 
 更多信息：[Tailscale Funnel](https://tailscale.com/kb/1223/funnel)
 
@@ -128,9 +128,9 @@ userspace_networking: true
 
 未設置時，此選項默認禁用。
 
-Tailscale 可以為您的 Home Assistant 實例提供 TLS 證書，在您的 tailnet 域內使用。
+Tailscale 可以為您的設備提供 TLS 證書，在您的 tailnet 域內使用。
 
-這可以防止瀏覽器警告您的 Home Assistant 實例的 HTTP URL 看起來未加密（瀏覽器不知道 Tailscale 節點之間的連接是用端到端加密保護的）。
+這可以防止瀏覽器警告您的 HTTP URL 看起來未加密（瀏覽器不知道 Tailscale 節點之間的連接是用端到端加密保護的）。
 
 更多信息：[啟用 HTTPS](https://tailscale.com/kb/1153/enabling-https)
 
@@ -166,7 +166,7 @@ Tailscale 只允許端口號 443、8443 和 10000。
 
 ### 選項：`taildrop`
 
-此附加元件支持 [Tailscale 的 Taildrop](https://tailscale.com/taildrop) 功能，允許您從其他 Tailscale 設備向 Home Assistant 實例發送文件。
+此附加元件支持 [Tailscale 的 Taildrop](https://tailscale.com/taildrop) 功能，允許您從其他 Tailscale 設備向設備發送文件。
 
 未設置時，此選項默認啟用。
 
@@ -174,11 +174,11 @@ Tailscale 只允許端口號 443、8443 和 10000。
 
 ### 選項：`userspace_networking`
 
-附加元件使用[用戶空間網絡模式](https://tailscale.com/kb/1112/userspace-networking)使您的 Home Assistant 實例（以及可選的本地子網）在您的 tailnet 中可訪問。
+附加元件使用[用戶空間網絡模式](https://tailscale.com/kb/1112/userspace-networking)使您的設備（以及可選的本地子網）在您的 tailnet 中可訪問。
 
 未設置時，此選項默認啟用。
 
-如果您需要從 Home Assistant 實例訪問 tailnet 上的其他客戶端，請禁用用戶空間網絡模式，這將在您的主機上創建一個 `tailscale0` 網絡接口。要能夠不僅用它們的 tailnet IP 地址，還用它們的 tailnet 名稱來尋址這些客戶端，您還必須配置 Home Assistant 的 DNS 選項。
+如果您需要從設備訪問 tailnet 上的其他客戶端，請禁用用戶空間網絡模式，這將在您的主機上創建一個 `tailscale0` 網絡接口。要能夠不僅用它們的 tailnet IP 地址，還用它們的 tailnet 名稱來尋址這些客戶端，您還必須配置 DNS 選項。
 
 ## 網絡
 
