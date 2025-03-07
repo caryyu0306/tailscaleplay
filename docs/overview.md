@@ -1,4 +1,4 @@
-# Tailscale Home Assistant 附加元件概述
+# Tailscale Home Assistant 附加元件概述 (Go 版本)
 
 ## 什麼是 Tailscale？
 
@@ -22,7 +22,9 @@ Tailscale 是一種零配置 VPN（虛擬私人網絡）服務，可簡化跨不
    - 靈活的架構，可隨著組織需求的增長而無縫擴展
    - 分佈式架構意味著添加新設備或用戶不會造成瓶頸
 
-## Home Assistant Tailscale 附加元件
+## Home Assistant Tailscale 附加元件 (Go 版本)
+
+這是 [Home Assistant Tailscale 附加元件](https://github.com/hassio-addons/addon-tailscale) 的 Go 語言重寫版本。它保留了原版的所有功能，同時提供了更好的性能和資源使用效率。
 
 這個 Home Assistant 社區附加元件讓您能夠在 Home Assistant 實例上安裝和配置 Tailscale，從而創建一個安全的網絡連接，使您可以從任何地方安全地訪問您的 Home Assistant 和本地網絡。
 
@@ -38,10 +40,17 @@ Tailscale 是一種零配置 VPN（虛擬私人網絡）服務，可簡化跨不
 - **HTTPS 代理**：為您的 Home Assistant 實例提供 TLS 證書
 - **Taildrop**：在設備間輕鬆發送文件
 
+### Go 語言版本的優勢
+
+- **更高的性能**：Go 語言的並發模型和低內存占用提供更好的性能
+- **更低的資源消耗**：更適合在資源受限的設備上運行
+- **更好的穩定性**：透過 Go 的強類型系統減少運行時錯誤
+- **更好的可維護性**：代碼結構清晰，易於維護和擴展
+
 ### 支持的架構
 
-- aarch64
-- amd64
+- aarch64 (arm64)
+- amd64 (x86_64)
 - armv7
 - i386（不支持）
 - armhf（不支持）

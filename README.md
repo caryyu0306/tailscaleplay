@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: Tailscale
+# Home Assistant Community Add-on: Tailscale (Go 版本)
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -21,81 +21,95 @@
 
 [![Support Frenck on Patreon][patreon-shield]][patreon]
 
-Zero config VPN for building secure networks.
+零配置 VPN，用於建立安全網絡的 Go 語言實現版本。
 
-## About
+## 關於
 
-Tailscale is a zero config VPN, which installs on any device in minutes,
-including your Home Assistant instance.
+這是 [Home Assistant Tailscale 附加元件](https://github.com/hassio-addons/addon-tailscale) 的 Go 語言重寫版本。
 
-Create a secure network between your servers, computers, and cloud instances.
-Even when separated by firewalls or subnets, Tailscale just works. Tailscale
-manages firewall rules for you, and works from anywhere you are.
+Tailscale 是一個零配置 VPN，幾分鐘內就可以安裝在任何設備上，
+包括您的 Home Assistant 實例。
 
-[:books: Read the full add-on documentation][docs]
+在您的伺服器、電腦和雲實例之間創建一個安全網絡。
+即使被防火牆或子網分隔，Tailscale 也能正常工作。Tailscale
+為您管理防火牆規則，並可以從任何地方使用。
 
-## Support
+[:books: 閱讀完整的附加元件文檔][docs]
 
-Got questions?
+## 特點
 
-You have several options to get them answered:
+- 零配置 VPN，幾分鐘內在您的 Home Assistant 實例上安裝
+- 安全連接：即使被防火牆或子網分隔，Tailscale 也能正常工作
+- 防火牆管理：Tailscale 為您管理防火牆規則
+- 遠程訪問：從任何地方安全地訪問您的 Home Assistant 實例
+- 子網路由：可以選擇將您的整個家庭網絡共享到您的 Tailscale 網絡
+- 出口節點功能：可以通過您的 Home Assistant 實例路由互聯網流量
+- Magic DNS：輕鬆通過名稱而不是 IP 地址訪問設備
+- HTTPS 代理：為您的 Home Assistant 實例提供 TLS 證書
+- Taildrop：在設備間輕鬆發送文件
 
-- The [Home Assistant Community Add-ons Discord chat server][discord] for add-on
-  support and feature requests.
-- The [Home Assistant Discord chat server][discord-ha] for general Home
-  Assistant discussions and questions.
-- The Home Assistant [Community Forum][forum].
-- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
+## 支持
 
-You could also [open an issue here][issue] GitHub.
+有問題嗎？
 
-## Contributing
+您有幾種方式來獲得解答：
 
-This is an active open-source project. We are always open to people who want to
-use the code or contribute to it.
+- [Home Assistant Community Add-ons Discord 聊天伺服器][discord] 用於附加元件
+  支持和功能請求。
+- [Home Assistant Discord 聊天伺服器][discord-ha] 用於一般 Home
+  Assistant 討論和問題。
+- Home Assistant [社區論壇][forum]。
+- 加入 [Reddit subreddit][reddit] 在 [/r/homeassistant][reddit]
 
-We have set up a separate document containing our
-[contribution guidelines](.github/CONTRIBUTING.md).
+您也可以在 GitHub 上[開啟一個問題][issue]。
 
-Thank you for being involved! :heart_eyes:
+## 貢獻
 
-## Authors & contributors
+這是一個活躍的開源項目。我們始終歡迎希望使用
+代碼或為其做出貢獻的人。
 
-The original setup of this repository is by [Franck Nijhof][frenck].
+我們設立了一個單獨的文檔，其中包含我們的
+[貢獻準則](.github/CONTRIBUTING.md)。
 
-For a full list of all authors and contributors,
-check [the contributor's page][contributors].
+感謝您的參與！:heart_eyes:
 
-## We have got some Home Assistant add-ons for you
+## 作者與貢獻者
 
-Want some more functionality to your Home Assistant instance?
+該存儲庫的原始設置由 [Franck Nijhof][frenck] 完成。
+Go 語言版本由社區維護。
 
-We have created multiple add-ons for Home Assistant. For a full list, check out
-our [GitHub Repository][repository].
+有關所有作者和貢獻者的完整列表，
+請查看[貢獻者頁面][contributors]。
 
-## License
+## 我們為您提供了一些 Home Assistant 附加元件
 
-MIT License
+想要為您的 Home Assistant 實例添加更多功能嗎？
+
+我們為 Home Assistant 創建了多個附加元件。有關完整列表，請查看
+我們的 [GitHub 存儲庫][repository]。
+
+## 許可證
+
+MIT 許可證
 
 Copyright (c) 2021-2025 Franck Nijhof
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+特此免費授予任何獲得本軟件及相關文檔文件（「軟件」）副本的人
+不受限制地處理本軟件的權利，包括但不限於
+使用、複製、修改、合併、出版、分發、再許可和/或出售
+本軟件的副本，並允許向其提供本軟件的人
+這樣做，但須符合以下條件：
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+上述版權聲明和本許可聲明應包含在所有
+軟件的副本或重要部分中。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+軟件按「原樣」提供，沒有任何形式的明示或
+暗示的保證，包括但不限於適銷性保證、
+特定用途的適用性和非侵權性。在任何情況下都不應
+作者或版權持有人對任何索賠、損害或其他
+責任，無論是在合同訴訟、侵權行為或其他方面，由
+於軟件或軟件的使用或其他交易而產生的、
+軟件。
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
