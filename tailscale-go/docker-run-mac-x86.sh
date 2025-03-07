@@ -16,6 +16,72 @@ if [ "$(docker ps -a -q -f name=${CONTAINER_NAME})" ]; then
     docker rm ${CONTAINER_NAME}
 fi
 
+# 從options.json讀取配置並設置環境變量
+CONFIG_FILE="options.json"
+if [ -f "$CONFIG_FILE" ]; then
+    echo "從 $CONFIG_FILE 讀取配置..."
+    
+    # 讀取accept_dns
+    ACCEPT_DNS=$(jq -r '.accept_dns // true' "$CONFIG_FILE")
+    # 讀取accept_routes
+    ACCEPT_ROUTES=$(jq -r '.accept_routes // true' "$CONFIG_FILE")
+    # 讀取advertise_exit_node
+    ADVERTISE_EXIT_NODE=$(jq -r '.advertise_exit_node // true' "$CONFIG_FILE")
+    # 讀取advertise_routes (數組)
+    ADVERTISE_ROUTES=$(jq -r '.advertise_routes | join(",")' "$CONFIG_FILE")
+    # 讀取login_server
+    LOGIN_SERVER=$(jq -r '.login_server // "https://controlplane.tailscale.com"' "$CONFIG_FILE")
+    # 讀取tags (數組)
+    TAGS=$(jq -r '.tags | join(",")' "$CONFIG_FILE")
+    # 讀取userspace_networking
+    USERSPACE=$(jq -r '.userspace_networking // true' "$CONFIG_FILE")
+    
+    # 設置環境變量參數
+    ENV_PARAMS=""
+    
+    # 添加accept_dns
+    if [ "$ACCEPT_DNS" = "true" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_ACCEPT_DNS=true"
+    fi
+    
+    # 添加accept_routes
+    if [ "$ACCEPT_ROUTES" = "true" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_EXTRA_ARGS=--accept-routes"
+    fi
+    
+    # 添加advertise_exit_node
+    if [ "$ADVERTISE_EXIT_NODE" = "true" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_EXTRA_ARGS=--advertise-exit-node"
+    fi
+    
+    # 添加advertise_routes
+    if [ ! -z "$ADVERTISE_ROUTES" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_ROUTES=$ADVERTISE_ROUTES"
+    fi
+    
+    # 添加login_server
+    if [ ! -z "$LOGIN_SERVER" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_EXTRA_ARGS=--login-server=$LOGIN_SERVER"
+    fi
+    
+    # 添加tags
+    if [ ! -z "$TAGS" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_EXTRA_ARGS=--advertise-tags=$TAGS"
+    fi
+    
+    # 添加userspace_networking
+    if [ "$USERSPACE" = "true" ]; then
+        ENV_PARAMS="$ENV_PARAMS -e TS_USERSPACE=true"
+    else
+        ENV_PARAMS="$ENV_PARAMS -e TS_USERSPACE=false"
+    fi
+    
+    echo "配置環境變量: $ENV_PARAMS"
+else
+    echo "配置文件 $CONFIG_FILE 不存在，使用默認設置"
+    ENV_PARAMS=""
+fi
+
 # 運行容器（後台模式）
 echo "啟動 ${CONTAINER_NAME} 容器..."
 docker run -d --name ${CONTAINER_NAME} \
@@ -28,6 +94,7 @@ docker run -d --name ${CONTAINER_NAME} \
   -v $(pwd)/docker-data:/data \
   -v $(pwd)/docker-share:/share \
   -p 41641:41641/udp \
+  $ENV_PARAMS \
   ${IMAGE_NAME}:${TAG}
 
 echo "容器已啟動！"
