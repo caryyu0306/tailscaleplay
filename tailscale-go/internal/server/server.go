@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yourusername/tailscale-ha/internal/config"
-	"github.com/yourusername/tailscale-ha/internal/tailscale"
+	"github.com/yourusername/tailscale/internal/config"
+	"github.com/yourusername/tailscale/internal/tailscale"
 )
 
 // 定義 HTML 模板
@@ -18,7 +18,7 @@ const indexTemplate = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailscale Home Assistant 附加元件</title>
+    <title>Tailscale 附加元件</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -73,7 +73,7 @@ const indexTemplate = `<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <h1>Tailscale Home Assistant 附加元件</h1>
+    <h1>Tailscale 附加元件</h1>
     
     <div class="status-box">
         <h2>Tailscale 狀態</h2>
@@ -95,15 +95,15 @@ const indexTemplate = `<!DOCTYPE html>
 
     <div class="info-box">
         <h2>使用說明</h2>
-        <p>Tailscale 是一種零配置 VPN，可讓您在不同設備和網絡之間建立安全連接。使用 Tailscale，您可以從任何地方安全地訪問您的 Home Assistant。</p>
+        <p>Tailscale 是一種零配置 VPN，可讓您在不同設備和網絡之間建立安全連接。使用 Tailscale，您可以從任何地方安全地訪問您的設備。</p>
         <p>主要功能:</p>
         <ul>
-            <li>從任何地方安全地訪問您的 Home Assistant</li>
+            <li>從任何地方安全地訪問您的設備</li>
             <li>無需端口轉發或 DynamicDNS</li>
-            <li>連接到您家中的所有智能家居設備</li>
+            <li>連接到您網絡中的所有智能設備</li>
             <li>在公共 Wi-Fi 上安全地瀏覽互聯網</li>
         </ul>
-        <p>更多信息請參閱 <a href="https://github.com/hassio-addons/addon-tailscale" target="_blank">GitHub 存儲庫</a>。</p>
+        <p>更多信息請參閱 <a href="https://github.com/tailscale/tailscale" target="_blank">GitHub 存儲庫</a>。</p>
     </div>
 
     <script>

@@ -16,5 +16,4 @@ services:
       - ./docker-data:/data
       - ./docker-share:/share
     ports:
-      - "8099:8099"
       - "41641:41641/udp" 

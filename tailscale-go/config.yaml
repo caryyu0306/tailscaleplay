@@ -3,10 +3,7 @@ name: "Tailscale (Go)"
 version: "0.1.0"
 slug: "tailscale_go"
 description: "零配置 VPN，用於構建安全網絡 (Go 版本)"
-url: "https://github.com/yourusername/tailscale-ha"
-ingress: true
-ingress_port: 8099
-ingress_stream: true
+url: "https://github.com/yourusername/tailscale"
 startup: services
 panel_icon: mdi:vpn
 arch:

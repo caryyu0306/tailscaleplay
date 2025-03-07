@@ -18,7 +18,6 @@ echo   --cap-add NET_RAW ^
 echo   --device /dev/net/tun ^
 echo   -v %cd%\docker-data:/data ^
 echo   -v %cd%\docker-share:/share ^
-echo   -p 8099:8099 ^
 echo   -p 41641:41641/udp ^
 echo   %IMAGE_NAME%:%TAG%
 
@@ -40,7 +39,6 @@ echo     volumes: >> docker-compose-win-arm.yml
 echo       - ./docker-data:/data >> docker-compose-win-arm.yml
 echo       - ./docker-share:/share >> docker-compose-win-arm.yml
 echo     ports: >> docker-compose-win-arm.yml
-echo       - "8099:8099" >> docker-compose-win-arm.yml
 echo       - "41641:41641/udp" >> docker-compose-win-arm.yml
 
 echo 已創建 docker-compose-win-arm.yml 文件，您可以使用以下命令運行：

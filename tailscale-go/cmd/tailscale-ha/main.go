@@ -9,9 +9,8 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/yourusername/tailscale-ha/internal/config"
-	"github.com/yourusername/tailscale-ha/internal/server"
-	"github.com/yourusername/tailscale-ha/internal/tailscale"
+	"github.com/yourusername/tailscale/internal/config"
+	"github.com/yourusername/tailscale/internal/tailscale"
 )
 
 var (
@@ -27,7 +26,7 @@ func main() {
 
 	// 設置日誌格式
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.Printf("Tailscale Home Assistant 附加元件 (版本: %s) 啟動中...", version)
+	log.Printf("Tailscale 附加元件 (版本: %s) 啟動中...", version)
 
 	// 檢查是否為 Docker 模式
 	if *dockerMode {
@@ -76,32 +75,11 @@ func main() {
 	}
 	defer ts.Stop()
 
-	// 啟動 Web 服務器
-	srv := server.New(cfg, ts)
-	errCh := make(chan error, 1)
-	go func() {
-		if err := srv.Start(); err != nil {
-			// 只有在非正常關閉時才報告錯誤
-			if err.Error() != "http: Server closed" {
-				errCh <- fmt.Errorf("啟動 Web 服務器失敗: %v", err)
-			}
-		}
-	}()
-
-	// 等待信號或錯誤
+	// 等待信號
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-	select {
-	case sig := <-sigCh:
-		log.Printf("收到信號 %v，正在關閉...", sig)
-	case err := <-errCh:
-		log.Printf("發生錯誤: %v", err)
-	}
+	sig := <-sigCh
+	log.Printf("收到信號 %v，正在關閉...", sig)
 
-	// 關閉 Web 服務器
-	if err := srv.Stop(); err != nil {
-		log.Printf("關閉 Web 服務器時出錯: %v", err)
-	}
-
-	fmt.Println("Tailscale Home Assistant 附加元件已關閉")
+	fmt.Println("Tailscale 附加元件已關閉")
 }

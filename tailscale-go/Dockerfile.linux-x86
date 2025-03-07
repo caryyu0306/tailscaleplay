@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.22-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY . .
 # 構建應用 - 指定為 amd64 架構
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o tailscale-ha ./cmd/tailscale-ha
 
-FROM --platform=linux/amd64 tailscale/tailscale:v1.80.3
+FROM tailscale/tailscale:v1.80.3
 
 # 創建必要的目錄
 RUN mkdir -p /data /share/taildrop /app
@@ -32,7 +32,6 @@ RUN chmod +x /app/docker-entrypoint.sh
 WORKDIR /app
 
 # 暴露端口
-EXPOSE 8099
 EXPOSE 41641/udp
 
 # 設置入口點

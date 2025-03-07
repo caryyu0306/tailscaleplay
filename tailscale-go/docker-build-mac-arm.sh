@@ -17,7 +17,6 @@ echo "  --cap-add NET_RAW \\"
 echo "  --device /dev/net/tun \\"
 echo "  -v \$(pwd)/docker-data:/data \\"
 echo "  -v \$(pwd)/docker-share:/share \\"
-echo "  -p 8099:8099 \\"
 echo "  -p 41641:41641/udp \\"
 echo "  ${IMAGE_NAME}:${TAG}"
 
@@ -40,7 +39,6 @@ services:
       - ./docker-data:/data
       - ./docker-share:/share
     ports:
-      - "8099:8099"
       - "41641:41641/udp"
 EOL
 

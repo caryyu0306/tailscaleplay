@@ -27,7 +27,6 @@ docker run -d --name ${CONTAINER_NAME} \
   --device /dev/net/tun \
   -v $(pwd)/docker-data:/data \
   -v $(pwd)/docker-share:/share \
-  -p 8099:8099 \
   -p 41641:41641/udp \
   ${IMAGE_NAME}:${TAG}
 

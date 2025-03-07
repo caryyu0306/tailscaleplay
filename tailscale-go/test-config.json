@@ -14,7 +14,7 @@
   "snat_subnet_routes": true,
   "stateful_filtering": false,
   "tags": [
-    "tag:homeassistant"
+    "tag:tailscale"
   ],
   "taildrop": true,
   "userspace_networking": true

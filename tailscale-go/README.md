@@ -1,17 +1,17 @@
-# Tailscale Home Assistant 附加元件 (Go 版本)
+# Tailscale 附加元件 (Go 版本)
 
-這是 [Home Assistant Tailscale 附加元件](https://github.com/hassio-addons/addon-tailscale) 的 Go 語言重寫版本。
+這是 Tailscale 附加元件的 Go 語言重寫版本。
 
 ## 功能
 
-- 零配置 VPN，幾分鐘內在您的 Home Assistant 實例上安裝
+- 零配置 VPN，幾分鐘內在您的設備上安裝
 - 安全連接：即使被防火牆或子網分隔，Tailscale 也能正常工作
 - 防火牆管理：Tailscale 為您管理防火牆規則
-- 遠程訪問：從任何地方安全地訪問您的 Home Assistant 實例
-- 子網路由：可以選擇將您的整個家庭網絡共享到您的 Tailscale 網絡
-- 出口節點功能：可以通過您的 Home Assistant 實例路由互聯網流量
+- 遠程訪問：從任何地方安全地訪問您的設備
+- 子網路由：可以選擇將您的整個網絡共享到您的 Tailscale 網絡
+- 出口節點功能：可以通過您的設備路由互聯網流量
 - Magic DNS：輕鬆通過名稱而不是 IP 地址訪問設備
-- HTTPS 代理：為您的 Home Assistant 實例提供 TLS 證書
+- HTTPS 代理：為您的設備提供 TLS 證書
 - Taildrop：在設備間輕鬆發送文件
 
 ## 安裝
@@ -153,10 +153,10 @@
 
 ```bash
 # 構建映像
-docker build -t tailscale-ha .
+docker build -t tailscale .
 
 # 運行容器
-docker run -d --name tailscale-ha \
+docker run -d --name tailscale \
   --restart unless-stopped \
   --cap-add NET_ADMIN \
   --cap-add NET_RAW \
@@ -165,19 +165,19 @@ docker run -d --name tailscale-ha \
   -v $(pwd)/docker-share:/share \
   -p 8099:8099 \
   -p 41641:41641/udp \
-  tailscale-ha
+  tailscale
 ```
 
-### 使用 Home Assistant 附加元件
+### 使用附加元件
 
-1. 將此存儲庫添加到您的 Home Assistant 附加元件存儲庫中
+1. 將此存儲庫添加到您的附加元件存儲庫中
 2. 在附加元件商店中安裝 "Tailscale (Go)"
 3. 啟動附加元件
 4. 通過 Web UI 完成 Tailscale 認證
 
 ## 配置
 
-配置選項與原始 Tailscale 附加元件相同：
+配置選項如下：
 
 ```yaml
 accept_dns: true
@@ -196,12 +196,12 @@ snat_subnet_routes: true
 stateful_filtering: false
 tags:
   - tag:example
-  - tag:homeassistant
+  - tag:tailscale
 taildrop: true
 userspace_networking: true
 ```
 
-有關配置選項的詳細說明，請參閱 [配置文檔](https://github.com/hassio-addons/addon-tailscale/blob/main/tailscale/DOCS.md)。
+有關配置選項的詳細說明，請參閱 [配置文檔](docs/configuration.md)。
 
 ## 開發
 
@@ -218,13 +218,13 @@ userspace_networking: true
 ### 構建
 
 ```bash
-go build -o tailscale-ha ./cmd/tailscale-ha
+go build -o tailscale ./cmd/tailscale-ha
 ```
 
 ### 運行
 
 ```bash
-./tailscale-ha --config config.json
+./tailscale --config config.json
 ```
 
 ## 支持的架構

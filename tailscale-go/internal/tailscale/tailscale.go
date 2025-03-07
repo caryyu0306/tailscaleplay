@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yourusername/tailscale-ha/internal/config"
+	"github.com/yourusername/tailscale/internal/config"
 )
 
 // 模擬模式設置

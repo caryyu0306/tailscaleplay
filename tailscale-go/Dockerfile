@@ -32,7 +32,6 @@ RUN chmod +x /app/docker-entrypoint.sh
 WORKDIR /app
 
 # 暴露端口
-EXPOSE 8099
 EXPOSE 41641/udp
 
 # 設置入口點
