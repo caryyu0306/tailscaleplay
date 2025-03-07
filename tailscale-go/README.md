@@ -30,6 +30,118 @@
    ./docker-run.sh
    ```
 
+#### 在不同平台和架構上使用
+
+##### macOS x86 (Intel)
+
+1. 構建 macOS x86 兼容的 Docker 映像：
+   ```bash
+   chmod +x docker-build-mac-x86.sh
+   ./docker-build-mac-x86.sh
+   ```
+
+2. 運行 Docker 容器：
+   ```bash
+   chmod +x docker-run-mac-x86.sh
+   ./docker-run-mac-x86.sh
+   ```
+
+3. 或者使用 Docker Compose：
+   ```bash
+   docker-compose -f docker-compose-mac-x86.yml up -d
+   ```
+
+##### macOS ARM (Apple Silicon)
+
+1. 構建 macOS ARM 兼容的 Docker 映像：
+   ```bash
+   chmod +x docker-build-mac-arm.sh
+   ./docker-build-mac-arm.sh
+   ```
+
+2. 運行 Docker 容器：
+   ```bash
+   chmod +x docker-run-mac-arm.sh
+   ./docker-run-mac-arm.sh
+   ```
+
+3. 或者使用 Docker Compose：
+   ```bash
+   docker-compose -f docker-compose-mac-arm.yml up -d
+   ```
+
+##### Windows x86
+
+1. 構建 Windows x86 兼容的 Docker 映像：
+   ```cmd
+   docker-build-win-x86.bat
+   ```
+
+2. 運行 Docker 容器：
+   ```cmd
+   docker-run-win-x86.bat
+   ```
+
+3. 或者使用 Docker Compose：
+   ```cmd
+   docker-compose -f docker-compose-win-x86.yml up -d
+   ```
+
+##### Windows ARM
+
+1. 構建 Windows ARM 兼容的 Docker 映像：
+   ```cmd
+   docker-build-win-arm.bat
+   ```
+
+2. 運行 Docker 容器：
+   ```cmd
+   docker-run-win-arm.bat
+   ```
+
+3. 或者使用 Docker Compose：
+   ```cmd
+   docker-compose -f docker-compose-win-arm.yml up -d
+   ```
+
+##### Linux x86
+
+1. 構建 Linux x86 兼容的 Docker 映像：
+   ```bash
+   chmod +x docker-build-linux-x86.sh
+   ./docker-build-linux-x86.sh
+   ```
+
+2. 運行 Docker 容器：
+   ```bash
+   chmod +x docker-run-linux-x86.sh
+   ./docker-run-linux-x86.sh
+   ```
+
+3. 或者使用 Docker Compose：
+   ```bash
+   docker-compose -f docker-compose-linux-x86.yml up -d
+   ```
+
+##### Linux ARM
+
+1. 構建 Linux ARM 兼容的 Docker 映像：
+   ```bash
+   chmod +x docker-build-linux-arm.sh
+   ./docker-build-linux-arm.sh
+   ```
+
+2. 運行 Docker 容器：
+   ```bash
+   chmod +x docker-run-linux-arm.sh
+   ./docker-run-linux-arm.sh
+   ```
+
+3. 或者使用 Docker Compose：
+   ```bash
+   docker-compose -f docker-compose-linux-arm.yml up -d
+   ```
+
 #### 方法 2：使用 Docker Compose
 
 1. 使用 Docker Compose 構建並運行：

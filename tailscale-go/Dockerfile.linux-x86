@@ -1,0 +1,39 @@
+FROM --platform=linux/amd64 golang:1.22-alpine AS builder
+
+WORKDIR /app
+
+# 安裝構建依賴
+RUN apk add --no-cache git
+
+# 複製 Go 模組文件
+COPY go.mod go.sum* ./
+RUN go mod download
+
+# 複製源代碼
+COPY . .
+
+# 構建應用 - 指定為 amd64 架構
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o tailscale-ha ./cmd/tailscale-ha
+
+FROM --platform=linux/amd64 tailscale/tailscale:v1.80.3
+
+# 創建必要的目錄
+RUN mkdir -p /data /share/taildrop /app
+
+# 複製構建的二進制文件和配置
+COPY --from=builder /app/tailscale-ha /usr/local/bin/
+COPY --from=builder /app/config.json.example /app/
+COPY docker-entrypoint.sh /app/
+
+# 設置執行權限
+RUN chmod +x /app/docker-entrypoint.sh
+
+# 設置工作目錄
+WORKDIR /app
+
+# 暴露端口
+EXPOSE 8099
+EXPOSE 41641/udp
+
+# 設置入口點
+ENTRYPOINT ["/app/docker-entrypoint.sh"] 
