@@ -5,156 +5,146 @@
 ## 前提條件
 
 - 已安裝 Docker
-- 已安裝 Git（用於克隆代碼庫）
 - 基本的命令行知識
 
 ## 快速開始
 
-1. 克隆代碼庫：
-   ```bash
-   git clone https://github.com/yourusername/tailscale-go.git
-   cd tailscale-go
-   ```
-
-2. 複製配置文件：
+1. 複製配置文件：
    ```bash
    cp config.json.example options.json
    ```
 
-3. 根據需要修改 `options.json` 文件
+2. 根據需要修改 `options.json` 文件
 
-4. 構建 Docker 映像：
+3. 使用腳本運行 Tailscale 容器：
    ```bash
-   # 對於 macOS x86 (Intel)
-   ./docker-build-mac-x86.sh
-   
-   # 對於其他平台，使用相應的腳本
+   # 構建和運行 Docker 容器
+   ./tailscale.sh run
    ```
 
-5. 運行 Docker 容器：
+   或使用認證密鑰實現自動登錄：
    ```bash
-   # 對於 macOS x86 (Intel)
-   ./docker-run-mac-x86.sh
-   
-   # 對於其他平台，使用相應的腳本
+   # 使用認證密鑰運行
+   ./tailscale.sh run --authkey=tskey-auth-xxxxxxxxxxxxxxxx
    ```
 
-## 配置選項
+4. 或者，使用 Docker Compose：
+   ```bash
+   # 生成 docker-compose.yml 文件
+   ./tailscale.sh compose
+   
+   # 啟動容器
+   docker compose up -d
+   ```
 
-Docker 容器的配置主要通過 `options.json` 文件進行。運行腳本會自動讀取此文件並將配置轉換為相應的環境變量。
+## Docker 容器配置
+
+Docker 容器的配置主要通過以下方式進行：
+
+1. `options.json` 文件：最簡單的配置方式
+2. 環境變量：高級用戶可以直接設置環境變量
+3. 命令行參數：通過 `tailscale.sh` 腳本傳遞參數
+
+### 使用 options.json 配置
+
+`options.json` 文件包含了容器的配置選項。`tailscale.sh` 腳本會自動讀取此文件並將配置轉換為相應的環境變量。
 
 詳細的配置選項請參閱 [配置指南](configuration.md)。
 
-## 運行腳本說明
+### 直接使用 Docker 命令
 
-本專案提供了多個運行腳本，適用於不同的操作系統和架構：
+如果您想直接使用 `docker run` 命令而不使用提供的腳本，可以手動設置環境變量：
 
-- `docker-run-mac-arm.sh`: 適用於 macOS ARM (Apple Silicon)
-- `docker-run-mac-x86.sh`: 適用於 macOS x86 (Intel)
-- `docker-run-linux-arm.sh`: 適用於 Linux ARM
-- `docker-run-linux-x86.sh`: 適用於 Linux x86
-- `docker-run-win-arm.bat`: 適用於 Windows ARM
-- `docker-run-win-x86.bat`: 適用於 Windows x86
+```bash
+docker run -d --name tailscale-ha \
+  --restart unless-stopped \
+  --cap-add NET_ADMIN \
+  --cap-add NET_RAW \
+  --device /dev/net/tun \
+  -v $(pwd)/docker-data:/data \
+  -v $(pwd)/docker-share:/share \
+  -p 41641:41641/udp \
+  -e TS_ACCEPT_DNS=true \
+  -e TS_ACCEPT_ROUTES=true \
+  -e TS_ADVERTISE_EXIT_NODE=true \
+  -e TS_ROUTES="192.168.0.0/16" \
+  -e TS_USERSPACE=true \
+  -e TS_STATE_DIR=/data \
+  -e TS_AUTH_ONCE=true \
+  -e TS_AUTHKEY=tskey-auth-xxxxxxxxxxxxxxxx \
+  tailscale/tailscale:latest
+```
 
-這些腳本會：
-1. 檢查並停止已存在的容器
-2. 創建必要的數據目錄
-3. 從 `options.json` 讀取配置並轉換為環境變量
-4. 啟動容器並顯示認證 URL
+## tailscale.sh 腳本用法
 
-## 環境變量說明
+`tailscale.sh` 腳本是本專案的核心工具，用於構建和運行 Tailscale 容器。
 
-運行腳本會將 `options.json` 中的配置轉換為以下 Docker 環境變量：
+### 基本用法
 
-| options.json 選項 | Docker 環境變量 |
-|-------------------|----------------|
-| accept_dns        | TS_ACCEPT_DNS  |
-| accept_routes     | TS_ACCEPT_ROUTES |
-| advertise_exit_node | TS_EXTRA_ARGS=--advertise-exit-node |
-| advertise_routes  | TS_ROUTES      |
-| login_server      | TS_LOGIN_SERVER |
-| tags              | TS_TAGS |
-| userspace_networking | TS_USERSPACE |
+```bash
+# 顯示幫助信息
+./tailscale.sh --help
 
-此外，腳本還會設置以下環境變量，用於持續性服務：
+# 運行 Tailscale 容器
+./tailscale.sh run
 
-| 環境變量 | 說明 |
-|---------|------|
-| TS_STATE_DIR | Tailscale 狀態存儲目錄，設置為 `/data` |
-| TS_AUTH_ONCE | 設置為 `true`，容器重啟時如果已經登錄，就不會強制重新登錄 |
+# 生成 docker-compose.yml 文件
+./tailscale.sh compose
+```
 
-## 持續性服務（非臨時節點）
+### 命令行選項
 
-默認情況下，本專案已配置為持續性服務（非臨時節點），這意味著：
+| 選項 | 說明 |
+|------|------|
+| `--help`, `-h` | 顯示幫助信息 |
+| `--tag=TAG` | 指定 Tailscale 映像標籤 (默認: latest) |
+| `--name=NAME` | 指定容器名稱 (默認: tailscale-ha) |
+| `--output=FILE` | 指定輸出文件名 (默認: docker-compose.yml) |
+| `--authkey=KEY` | 指定 Tailscale 認證密鑰 |
 
-1. Tailscale 狀態會保存在持久卷中（`docker-data` 目錄）
-2. 容器重啟後會保持相同的 IP 地址和身份
-3. 不需要重新認證
+### 命令
 
-這與 Tailscale 的默認行為不同，默認情況下 Tailscale 在容器中運行時是臨時節點（Ephemeral node），每次容器重啟都會獲得新的 IP 地址和身份。
+| 命令 | 說明 |
+|------|------|
+| `run` | 運行 Tailscale 容器 |
+| `compose` | 生成 docker-compose.yml 文件 |
 
-持續性服務是通過以下設置實現的：
+## 持久化存儲
 
-- **持久存儲**：
-  - 掛載 `docker-data` 目錄到容器的 `/data` 目錄
-  - 設置 `TS_STATE_DIR=/data` 環境變量，指示 Tailscale 將狀態存儲在此目錄
+本專案使用以下目錄進行持久化存儲：
 
-- **保持登錄狀態**：
-  - 設置 `TS_AUTH_ONCE=true` 環境變量，這樣容器重啟時如果已經登錄，就不會強制重新登錄
+- `docker-data`：存儲 Tailscale 狀態和配置
+- `docker-share`：用於 Taildrop 文件共享功能
 
-## 自動登錄
+確保這些目錄在容器重啟後仍然存在，以保持 Tailscale 連接狀態。
 
-您可以使用 Tailscale 認證密鑰（Auth Key）來實現自動登錄，無需手動訪問認證 URL：
+## 自動登錄配置
+
+使用認證密鑰可以實現自動登錄，無需手動訪問認證 URL：
 
 ```bash
 ./tailscale.sh run --authkey=tskey-auth-xxxxxxxxxxxxxxxx
 ```
 
-要獲取認證密鑰：
+要獲取認證密鑰，請訪問 Tailscale 管理控制台的 [密鑰頁面](https://login.tailscale.com/admin/settings/keys)。生成密鑰時，請確保選擇 "Ephemeral: No"，否則節點仍然會是臨時的。
 
-1. 訪問 Tailscale 管理控制台：https://login.tailscale.com/admin/settings/keys
-2. 點擊 "Generate auth key"
-3. 選擇以下選項：
-   - **Reusable**：如果您希望密鑰可以多次使用
-   - **Ephemeral: No**：這一點非常重要！選擇 "No" 確保節點不是臨時的
-   - **Pre-approved**：如果您希望節點自動獲得批准，無需管理員手動批准
-4. 設置有效期（例如 90 天）
-5. 點擊 "Generate key"
-6. 複製生成的密鑰（格式如 `tskey-auth-xxxxxxxxxxxxxxxx`）
+## 容器功能和權限
 
-使用認證密鑰的好處：
+Tailscale 容器需要以下特權才能正常運行：
 
-- 無需手動訪問認證 URL
-- 適合自動化部署
-- 可以預先設置節點權限和標籤
+- `NET_ADMIN` 和 `NET_RAW` 能力：用於配置網絡接口和路由
+- `/dev/net/tun` 設備：用於創建 TUN 設備（當不使用用戶空間網絡時）
 
-**注意**：請妥善保管您的認證密鑰，它可以用來訪問您的 Tailscale 網絡。
+## 網絡端口
 
-## 數據持久化
-
-容器使用以下卷進行數據持久化：
-
-- `./docker-data:/data`: 存儲 Tailscale 狀態和配置
-- `./docker-share:/share`: 用於 Taildrop 文件共享
+- `41641/udp`：WireGuard 和點對點連接使用的 UDP 端口
 
 ## 故障排除
 
-如果您在使用 Docker 容器時遇到問題，可以嘗試以下步驟：
+如果遇到問題，請檢查：
 
-1. 檢查容器日誌：
-   ```bash
-   docker logs tailscale-ha
-   ```
-
-2. 重新啟動容器：
-   ```bash
-   docker restart tailscale-ha
-   ```
-
-3. 重新構建映像並運行容器：
-   ```bash
-   ./docker-build-mac-x86.sh
-   ./docker-run-mac-x86.sh
-   ```
+1. 容器日誌：`docker logs tailscale-ha`
+2. Tailscale 狀態：`docker exec tailscale-ha tailscale status`
+3. 網絡連接：確保端口 `41641/udp` 未被防火牆阻止
 
 更多故障排除信息，請參閱 [故障排除指南](troubleshooting.md)。 

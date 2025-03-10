@@ -1,174 +1,214 @@
-# Tailscale 附加元件故障排除指南
+# Tailscale Docker 容器故障排除指南
 
-本文檔提供解決使用 Tailscale 附加元件時可能遇到的常見問題的步驟。
+本文檔提供解決使用 Tailscale Docker 容器時可能遇到的常見問題的步驟。
 
 ## 診斷工具
 
 在開始故障排除之前，以下診斷工具和資源可能會有幫助：
 
-1. **附加元件日誌**：
-   - 前往 **Supervisor** > **附加元件** > **Tailscale**
-   - 選擇 **日誌** 選項卡查看詳細的運行日誌
+1. **容器日誌**：
+   ```bash
+   docker logs tailscale-ha
+   ```
 
-2. **Tailscale 管理控制台**：
+2. **Tailscale 狀態**：
+   ```bash
+   docker exec tailscale-ha tailscale status
+   ```
+
+3. **Tailscale 管理控制台**：
    - 前往 [https://login.tailscale.com](https://login.tailscale.com)
    - 檢查連接的設備、它們的狀態和 IP 地址
 
-3. **Tailscale CLI**：
-   - 在支持的設備上，您可以使用 `tailscale status` 命令檢查連接狀態
-   - 您可以通過 SSH 附加元件或直接 SSH 訪問
-
 ## 常見問題及解決方案
 
-### 問題：無法啟動附加元件
+### 問題：容器無法啟動
 
-**症狀**：附加元件無法啟動，在日誌中顯示錯誤。
-
-**可能的解決方案**：
-1. 檢查您的系統是否有足夠的資源（內存和 CPU）
-2. 檢查網絡連接是否正常
-3. 嘗試重新啟動系統
-4. 如果問題持續，嘗試卸載並重新安裝附加元件
-
-### 問題：附加元件啟動，但無法通過 Web UI 認證
-
-**症狀**：附加元件顯示為正在運行，但當您嘗試通過 Web UI 認證時，頁面無法加載或認證失敗。
+**症狀**：Docker 容器無法啟動，或啟動後立即退出。
 
 **可能的解決方案**：
-1. 嘗試使用不同的瀏覽器（推薦 Chrome）
-2. 清除瀏覽器緩存和 cookie
-3. 檢查日誌中是否有網絡相關錯誤
-4. 確保您的系統可以訪問互聯網
-5. 如果您使用的是自定義的 `login_server`，請驗證其配置是否正確
-
-### 問題：無法從其他設備訪問
-
-**症狀**：Tailscale 顯示為已連接，但您無法從其他 Tailscale 設備訪問您的設備。
-
-**可能的解決方案**：
-1. 確保您使用的是正確的 Tailscale IP 地址和端口（通常是 `http://100.x.y.z:8123`）
-2. 檢查您的配置文件是否有任何可能阻止外部訪問的設置
-3. 測試基本的網絡連接，例如使用 `ping` 命令
-4. 檢查 Tailscale 管理控制台中的設備是否都正確連接和在線
-5. 檢查 Tailscale ACL 策略是否可能限制訪問
-
-### 問題：容器重啟後 IP 地址改變
-
-**症狀**：每次重啟 Docker 容器後，Tailscale 獲得新的 IP 地址，需要重新認證。
-
-**可能的解決方案**：
-1. 確保您已經設置了持續性服務所需的環境變量：
-   - `TS_STATE_DIR=/data`
-   - `TS_AUTH_ONCE=true`
-2. 確保 `docker-data` 目錄已正確掛載到容器的 `/data` 目錄
-3. 檢查 `docker-data` 目錄的權限，確保容器可以讀寫
-4. 檢查 `docker-data` 目錄中是否存在 `tailscaled.state` 文件
-5. 如果使用 `--authkey` 參數，確保生成密鑰時選擇了 "Ephemeral: No"
-
-### 問題：自動登錄失敗
-
-**症狀**：使用 `--authkey` 參數運行容器，但仍然需要手動訪問認證 URL。
-
-**可能的解決方案**：
-1. 確保認證密鑰格式正確（應該以 `tskey-auth-` 開頭）
-2. 檢查認證密鑰是否已過期（在 Tailscale 管理控制台中查看）
-3. 確保認證密鑰具有足夠的權限
-4. 檢查容器日誌中是否有關於認證的錯誤信息：
+1. 檢查 Docker 日誌：
    ```bash
-   docker logs tailscale-ha | grep -i auth
+   docker logs tailscale-ha
    ```
-5. 嘗試生成新的認證密鑰，確保選擇 "Reusable" 和 "Ephemeral: No"
 
-### 問題：子網路由不工作
+2. 確保設備有 `/dev/net/tun` 設備：
+   ```bash
+   ls -l /dev/net/tun
+   ```
+   如果不存在，您可能需要加載 tun 模塊：
+   ```bash
+   sudo modprobe tun
+   ```
 
-**症狀**：您已配置 `advertise_routes`，但無法從 Tailscale 設備訪問您的本地網絡。
+3. 確保容器有正確的權限：
+   ```bash
+   docker run --cap-add=NET_ADMIN --cap-add=NET_RAW ...
+   ```
 
-**可能的解決方案**：
-1. 確保您已在 Tailscale 管理控制台中批准了子網路由（在 [路由設置](https://login.tailscale.com/admin/machines) 中）
-2. 檢查 `advertise_routes` 配置是否包含正確的子網 CIDR
-3. 確保 `snat_subnet_routes` 設置為 `true`（除非您有特定原因禁用它）
-4. 檢查您的本地路由器或防火牆是否可能阻止流量
-5. 嘗試使用 `ip route` 命令（在支持的設備上）查看路由表
+4. 檢查 `docker-data` 目錄的權限：
+   ```bash
+   ls -la ./docker-data
+   ```
+   確保目錄可寫入。
 
-### 問題：MagicDNS 不工作
+### 問題：容器啟動，但 Tailscale 無法連接
 
-**症狀**：您無法使用主機名訪問您的 Tailscale 設備，只能使用 IP 地址。
-
-**可能的解決方案**：
-1. 確保在 Tailscale 管理控制台的 [DNS 設置](https://login.tailscale.com/admin/dns) 中啟用了 MagicDNS
-2. 如果您使用的是自己的 DNS 服務器（如 Pi-hole），請在附加元件配置中將 `accept_dns` 設置為 `false`
-3. 在您的 DNS 服務器中添加 `100.100.100.100` 作為上游 DNS 服務器
-4. 嘗試刷新 DNS 緩存
-5. 檢查您的設備是否正確配置為使用 Tailscale 的 DNS 服務器
-
-### 問題：出口節點功能不工作
-
-**症狀**：您已配置 `advertise_exit_node`，但無法將流量路由通過您的設備。
+**症狀**：容器啟動成功，但 Tailscale 無法連接到網絡。
 
 **可能的解決方案**：
-1. 確保在 Tailscale 管理控制台的 [設置頁面](https://login.tailscale.com/admin/settings) 中啟用了出口節點功能
-2. 在客戶端設備上正確選擇您的設備作為出口節點
-3. 檢查您的主機的防火牆設置
-4. 確保 IP 轉發已啟用（附加元件應自動處理這一點）
-5. 檢查您的互聯網服務提供商是否阻止了此類流量
+1. 檢查網絡連接是否正常，特別是 UDP 端口 41641 是否開放：
+   ```bash
+   nc -vuz login.tailscale.com 41641
+   ```
 
-### 問題：Taildrop 文件共享不工作
+2. 驗證防火牆設置是否阻止了 Tailscale 的連接。
 
-**症狀**：您無法使用 Taildrop 功能發送文件到您的設備。
+3. 如果使用認證密鑰，確保密鑰有效且未過期。
 
-**可能的解決方案**：
-1. 確保 `taildrop` 選項在附加元件配置中設置為 `true`
-2. 檢查您是否有足夠的存儲空間
-3. 確認您的客戶端設備支持 Taildrop
-4. 檢查文件大小限制（Taildrop 有最大文件大小限制）
-5. 檢查 `/share/taildrop` 目錄的權限
+4. 嘗試重新登錄：
+   ```bash
+   docker exec tailscale-ha tailscale login
+   ```
 
-### 問題：Tailscale Funnel / HTTPS 代理無法正常工作
+### 問題：Tailscale 連接成功，但無法訪問子網
 
-**症狀**：您已配置 `proxy` 或 `funnel`，但無法通過安全 HTTPS 連接或從外部訪問您的設備。
+**症狀**：Tailscale 顯示為已連接，但無法通過它訪問已廣告的子網。
 
 **可能的解決方案**：
-1. 確保您正確配置了配置文件中的 HTTP 集成
-2. 檢查您是否在 Tailscale 管理控制台中設置了必要的 ACL 策略
-3. 注意 Funnel 設置後可能需要長達 10 分鐘才能生效
-4. 嘗試清除瀏覽器緩存和 cookie
+1. 確保在 `options.json` 中正確配置了 `advertise_routes`。
 
-### 問題：更新後功能不工作
+2. 確保您在 Tailscale 管理控制台中批准了子網路由。
 
-**症狀**：在更新附加元件後，某些功能停止工作。
+3. 確保 `snat_subnet_routes` 設置正確（通常應該是 `true`）。
+
+4. 檢查容器的 IP 轉發是否啟用：
+   ```bash
+   docker exec tailscale-ha sysctl net.ipv4.ip_forward
+   ```
+   應該輸出 `net.ipv4.ip_forward = 1`。
+
+5. 在其他設備上確保啟用了接受路由選項：
+   ```bash
+   tailscale up --accept-routes
+   ```
+
+### 問題：無法在容器內使用 Tailscale 命令
+
+**症狀**：嘗試在容器內運行 `tailscale` 命令時出錯。
 
 **可能的解決方案**：
-1. 檢查更新日誌，查看是否有配置更改或依賴關係的變化
-2. 確保所有必要的配置都仍然有效
-3. 嘗試重新啟動附加元件
-4. 如果問題持續，考慮恢復到上一個工作版本，直到問題得到解決
+1. 在執行命令時，確保以正確的用戶運行：
+   ```bash
+   docker exec tailscale-ha tailscale status
+   ```
 
-## 高級故障排除
+2. 檢查 LocalAPI 套接字是否存在：
+   ```bash
+   docker exec tailscale-ha ls -l /var/run/tailscale/tailscaled.sock
+   ```
+
+3. 重啟容器可能會解決一些短暫的問題：
+   ```bash
+   docker restart tailscale-ha
+   ```
+
+### 問題：容器重啟後 Tailscale IP 地址改變
+
+**症狀**：每次容器重啟後，設備獲得一個新的 Tailscale IP 地址。
+
+**可能的解決方案**：
+1. 確保正確掛載了持久存儲卷：
+   ```bash
+   docker inspect tailscale-ha | grep -A 10 Mounts
+   ```
+   確保 `docker-data` 目錄正確掛載到容器的 `/data` 目錄。
+
+2. 確保設置了 `TS_STATE_DIR=/data` 環境變量。
+
+3. 確保設置了 `TS_AUTH_ONCE=true` 環境變量。
+
+4. 如果您使用的是認證密鑰，確保沒有設置為臨時節點（不要在密鑰後面添加 `?ephemeral=true`）。
+
+### 問題：Taildrop 功能無法使用
+
+**症狀**：無法使用 Taildrop 功能發送或接收文件。
+
+**可能的解決方案**：
+1. 確保在 `options.json` 中啟用了 `taildrop` 選項。
+
+2. 確保 `docker-share` 目錄已正確掛載到容器的 `/share` 目錄：
+   ```bash
+   docker inspect tailscale-ha | grep -A 10 Mounts
+   ```
+
+3. 檢查 `docker-share` 目錄的權限：
+   ```bash
+   ls -la ./docker-share
+   ```
+   確保目錄可寫入。
+
+4. 在 Tailscale 管理控制台中確認 Taildrop 權限設置是否正確。
+
+## 進階故障排除
 
 ### 收集診斷信息
 
-如果您需要提交問題報告，收集以下信息會很有幫助：
+要收集完整的診斷信息以協助故障排除，可以運行：
 
-1. 附加元件日誌的完整副本
-2. Tailscale 狀態輸出（如果可以訪問）
-3. 您的配置（確保刪除任何敏感信息）
-4. 問題的詳細描述，包括已嘗試的排除步驟
-5. 系統信息，如您的操作系統和硬件版本
+```bash
+docker exec tailscale-ha tailscale bugreport
+```
 
-### 重置 Tailscale 配置
+這將生成一個包含診斷信息的報告，可以與支持團隊共享。
 
-在某些情況下，完全重置 Tailscale 配置可能會有所幫助：
+### 重置 Tailscale 狀態
 
-1. 在 Tailscale 管理控制台中刪除設備
-2. 卸載附加元件
-3. 刪除 `/data/tailscale` 目錄（可能需要使用 SSH 訪問）
-4. 重新安裝附加元件
-5. 重新配置並重新授權設備
+如果遇到持續的問題，可以嘗試完全重置 Tailscale 狀態：
 
-## 尋求幫助
+1. 停止容器：
+   ```bash
+   docker stop tailscale-ha
+   ```
 
-如果您已經嘗試了本指南中的步驟但仍然遇到問題，您可以：
+2. 備份並刪除現有狀態：
+   ```bash
+   cp -r docker-data docker-data.bak
+   rm -rf docker-data/*
+   ```
 
-1. 在 [GitHub 存儲庫](https://github.com/hassio-addons/addon-tailscale/issues) 上提交問題
-2. 在社區論壇上尋求幫助
-3. 聯繫 Tailscale 支持（對於與 Tailscale 服務相關的問題） 
+3. 重新啟動容器：
+   ```bash
+   docker start tailscale-ha
+   ```
+   或者使用腳本重新運行：
+   ```bash
+   ./tailscale.sh run
+   ```
+
+4. 重新進行身份驗證。
+
+### 網絡連接問題
+
+如果懷疑是網絡連接問題，可以檢查：
+
+1. 確保端口 41641/UDP 開放且可從互聯網訪問：
+   ```bash
+   # 在容器中檢查
+   docker exec tailscale-ha netstat -tulpn | grep 41641
+   
+   # 在主機上檢查
+   netstat -tulpn | grep 41641
+   ```
+
+2. 檢查防火牆規則是否允許 UDP 流量。
+
+3. 如果在公司網絡或受限網絡環境中，可能需要使用 DERP 中繼。這是 Tailscale 的默認行為，但可能需要確保沒有阻止相關流量。
+
+## 更多幫助
+
+如果以上解決方案無法解決您的問題，您可以：
+
+1. 訪問 [Tailscale 官方文檔](https://tailscale.com/kb/)
+2. 查看 [Tailscale 論壇](https://forum.tailscale.com/)
+3. 在 GitHub 上提交問題 

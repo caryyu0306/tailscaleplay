@@ -2,7 +2,7 @@
 
 # 設置變量
 IMAGE_NAME="tailscale/tailscale"
-CONTAINER_NAME="tailscale-ha"
+CONTAINER_NAME="tailscale"
 TAG="latest"
 OUTPUT_FILE="docker-compose.yml"
 
