@@ -52,6 +52,33 @@
 4. 檢查 Tailscale 管理控制台中的設備是否都正確連接和在線
 5. 檢查 Tailscale ACL 策略是否可能限制訪問
 
+### 問題：容器重啟後 IP 地址改變
+
+**症狀**：每次重啟 Docker 容器後，Tailscale 獲得新的 IP 地址，需要重新認證。
+
+**可能的解決方案**：
+1. 確保您已經設置了持續性服務所需的環境變量：
+   - `TS_STATE_DIR=/data`
+   - `TS_AUTH_ONCE=true`
+2. 確保 `docker-data` 目錄已正確掛載到容器的 `/data` 目錄
+3. 檢查 `docker-data` 目錄的權限，確保容器可以讀寫
+4. 檢查 `docker-data` 目錄中是否存在 `tailscaled.state` 文件
+5. 如果使用 `--authkey` 參數，確保生成密鑰時選擇了 "Ephemeral: No"
+
+### 問題：自動登錄失敗
+
+**症狀**：使用 `--authkey` 參數運行容器，但仍然需要手動訪問認證 URL。
+
+**可能的解決方案**：
+1. 確保認證密鑰格式正確（應該以 `tskey-auth-` 開頭）
+2. 檢查認證密鑰是否已過期（在 Tailscale 管理控制台中查看）
+3. 確保認證密鑰具有足夠的權限
+4. 檢查容器日誌中是否有關於認證的錯誤信息：
+   ```bash
+   docker logs tailscale-ha | grep -i auth
+   ```
+5. 嘗試生成新的認證密鑰，確保選擇 "Reusable" 和 "Ephemeral: No"
+
 ### 問題：子網路由不工作
 
 **症狀**：您已配置 `advertise_routes`，但無法從 Tailscale 設備訪問您的本地網絡。

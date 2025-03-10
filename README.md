@@ -47,6 +47,97 @@ Tailscale 是一個零配置 VPN，幾分鐘內就可以安裝在任何設備上
 - HTTPS 代理：為您的設備提供 TLS 證書
 - Taildrop：在設備間輕鬆發送文件
 
+## Docker 使用指南
+
+本專案提供了簡化的 Docker 部署方式，適用於不同的操作系統和架構：
+
+### 快速開始
+
+1. 複製 `config.json.example` 到 `options.json` 並根據需要修改配置：
+   ```bash
+   cp config.json.example options.json
+   ```
+
+2. 使用通用腳本構建和運行容器：
+   ```bash
+   # 構建 Docker 映像
+   ./docker-build.sh
+   
+   # 運行 Docker 容器
+   ./docker-run.sh
+   ```
+
+   腳本會自動檢測您的平台和架構，並使用適當的設置。
+
+3. 或者，使用 Docker Compose：
+   ```bash
+   # 生成 docker-compose.yml 文件
+   ./generate-docker-compose.sh
+   
+   # 啟動容器
+   docker-compose up -d
+   ```
+
+### 配置 Docker 容器
+
+您可以通過修改 `options.json` 文件來配置 Tailscale 容器。腳本會自動讀取此文件並將配置轉換為相應的環境變量。
+
+主要配置選項包括：
+
+- `accept_dns`: 是否接受DNS設定
+- `accept_routes`: 是否接受路由
+- `advertise_exit_node`: 是否將節點廣告為出口節點
+- `advertise_connector`: 是否將節點廣告為應用連接器
+- `advertise_routes`: 要廣告的路由列表
+- `funnel`: 是否啟用 Funnel 功能
+- `login_server`: 登錄服務器地址
+- `proxy`: 是否啟用 HTTPS 代理
+- `tags`: 標籤列表
+- `userspace_networking`: 是否使用用戶空間網絡
+
+### 持續性服務（非臨時節點）
+
+默認情況下，本專案已配置為持續性服務（非臨時節點），這意味著：
+
+1. Tailscale 狀態會保存在持久卷中（`docker-data` 目錄）
+2. 容器重啟後會保持相同的 IP 地址和身份
+3. 不需要重新認證
+
+這是通過以下設置實現的：
+- `TS_STATE_DIR=/data`：將 Tailscale 狀態存儲在持久卷中
+- `TS_AUTH_ONCE=true`：容器重啟時如果已經登錄，就不會強制重新登錄
+
+### 自動登錄
+
+您可以使用 Tailscale 認證密鑰（Auth Key）來實現自動登錄，無需手動訪問認證 URL：
+
+```bash
+./tailscale.sh run --authkey=tskey-auth-xxxxxxxxxxxxxxxx
+```
+
+要獲取認證密鑰：
+1. 訪問 Tailscale 管理控制台：https://login.tailscale.com/admin/settings/keys
+2. 點擊 "Generate auth key"
+3. 選擇 "Reusable" 和 "Ephemeral: No"（重要！）
+4. 設置有效期（例如 90 天）
+5. 點擊 "Generate key"
+6. 複製生成的密鑰
+
+詳細配置說明請參閱 [配置指南](docs/configuration.md) 和 [Docker 環境使用指南](docs/docker.md)。
+
+### 平台特定腳本
+
+如果您需要使用平台特定的腳本，我們仍然提供了以下腳本：
+
+- **macOS ARM (Apple Silicon)**：`docker-build-mac-arm.sh` 和 `docker-run-mac-arm.sh`
+- **macOS x86 (Intel)**：`docker-build-mac-x86.sh` 和 `docker-run-mac-x86.sh`
+- **Linux ARM**：`docker-build-linux-arm.sh` 和 `docker-run-linux-arm.sh`
+- **Linux x86**：`docker-build-linux-x86.sh` 和 `docker-run-linux-x86.sh`
+- **Windows ARM**：`docker-build-win-arm.bat` 和 `docker-run-win-arm.bat`
+- **Windows x86**：`docker-build-win-x86.bat` 和 `docker-run-win-x86.bat`
+
+但我們建議使用通用腳本，它們提供了相同的功能，並且更容易維護。
+
 ## 支持
 
 有問題嗎？

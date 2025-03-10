@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  tailscale-ha:
+    image: tailscale/tailscale:latest
+    container_name: tailscale-ha
+    platform: linux/amd64
+    hostname: tailscale-ha
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    devices:
+      - /dev/net/tun
+    volumes:
+      - ./docker-data:/data
+      - ./docker-share:/share
+    ports:
+      - "41641:41641/udp"
+    environment:
+      - TS_ACCEPT_DNS=true
+      - TS_ACCEPT_ROUTES=true
+      - TS_ADVERTISE_EXIT_NODE=true
+      - TS_ADVERTISE_CONNECTOR=true
+      - TS_ROUTES=192.168.0.0/16
+      - TS_FUNNEL=false
+      - TS_LOGIN_SERVER=https://controlplane.tailscale.com
+      - TS_PROXY=false
+      - TS_PORT=443
+      - TS_SNAT_SUBNET_ROUTES=true
+      - TS_STATEFUL_FILTERING=false
+      - TS_TAGS=tag:homeassistant
+      - TS_TAILDROP=true
+      - TS_USERSPACE=true

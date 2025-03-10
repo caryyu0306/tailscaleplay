@@ -38,6 +38,58 @@ userspace_networking: true
 
 > **注意**：這些配置選項中的一些也可以在通過網頁 UI 訪問的 Tailscale 網頁界面上使用，但它們在那裡是只讀的。您不能通過網頁 UI 更改它們，因為在重新啟動附加元件時，所有在那裡進行的更改都會丟失。
 
+## Docker 環境特有配置
+
+在 Docker 環境中，除了上述配置選項外，還有一些特有的設置：
+
+### 持續性服務（非臨時節點）
+
+默認情況下，本專案已配置為持續性服務（非臨時節點），這意味著容器重啟後會保持相同的 IP 地址和身份，不需要重新認證。這是通過以下設置實現的：
+
+- `TS_STATE_DIR=/data`：將 Tailscale 狀態存儲在持久卷中
+- `TS_AUTH_ONCE=true`：容器重啟時如果已經登錄，就不會強制重新登錄
+
+這些設置已經在 `tailscale.sh` 腳本中配置好，您無需手動設置。
+
+### 自動登錄
+
+您可以使用 Tailscale 認證密鑰（Auth Key）來實現自動登錄，無需手動訪問認證 URL。在運行腳本時使用 `--authkey` 參數：
+
+```bash
+./tailscale.sh run --authkey=tskey-auth-xxxxxxxxxxxxxxxx
+```
+
+要獲取認證密鑰，請訪問 Tailscale 管理控制台的 [密鑰頁面](https://login.tailscale.com/admin/settings/keys)。生成密鑰時，請確保選擇 "Ephemeral: No"，否則節點仍然會是臨時的。
+
+### 手動設置環境變量
+
+如果您想直接使用 `docker run` 命令而不使用提供的腳本，可以手動設置環境變量：
+
+```bash
+docker run -d --name tailscale-ha \
+  --restart unless-stopped \
+  --cap-add NET_ADMIN \
+  --cap-add NET_RAW \
+  --device /dev/net/tun \
+  -v $(pwd)/docker-data:/data \
+  -v $(pwd)/docker-share:/share \
+  -p 41641:41641/udp \
+  -e TS_ACCEPT_DNS=true \
+  -e TS_ACCEPT_ROUTES=true \
+  -e TS_EXTRA_ARGS="--advertise-exit-node" \
+  -e TS_ROUTES="192.168.0.0/16" \
+  -e TS_USERSPACE=true \
+  -e TS_STATE_DIR=/data \
+  -e TS_AUTH_ONCE=true \
+  -e TS_AUTHKEY=tskey-auth-xxxxxxxxxxxxxxxx \
+  tailscale/tailscale:latest
+```
+
+**注意**：
+- 使用 `TS_EXTRA_ARGS` 時，多個參數應該合併到一個字符串中，用空格分隔。
+- `TS_STATE_DIR=/data` 和 `TS_AUTH_ONCE=true` 是實現持續性服務的關鍵設置。
+- 如果提供了 `TS_AUTHKEY`，容器將自動登錄，無需手動訪問認證 URL。
+
 ## 配置選項詳解
 
 ### 選項：`accept_dns`
