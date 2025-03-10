@@ -79,8 +79,11 @@ if [[ "$(uname)" == "Darwin" ]]; then
 elif [[ "$(uname)" == "Linux" ]]; then
     # Linux
     if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
-        # ARM
+        # ARM 64-bit
         PLATFORM="linux/arm64"
+    elif [[ "$(uname -m)" == "armv7l" ]]; then
+        # ARM 32-bit
+        PLATFORM="linux/arm/v7"
     else
         # x86
         PLATFORM="linux/amd64"
