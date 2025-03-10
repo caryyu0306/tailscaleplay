@@ -24,6 +24,7 @@ Tailscale 是一個零配置 VPN，幾分鐘內就可以安裝在任何設備上
 - 支援 Magic DNS：通過名稱而不是 IP 地址訪問設備
 - 支援 HTTPS 代理：為您的設備提供 TLS 證書
 - 支援 Taildrop：設備間輕鬆發送文件
+- **新增功能**: 智能啟動檢測 - 自動顯示 Tailscale 狀態或認證 URL
 
 ## 快速開始
 
@@ -99,6 +100,59 @@ Tailscale 是一個零配置 VPN，幾分鐘內就可以安裝在任何設備上
 4. 設置有效期（例如 90 天）
 5. 點擊 "Generate key"
 6. 複製生成的密鑰
+
+## 最新改進：智能啟動檢測
+
+我們對 `tailscale.sh` 腳本進行了改進，增加了智能啟動檢測功能。這項改進使得腳本能夠：
+
+1. **自動檢測 Tailscale 狀態**：腳本現在會主動檢查 Tailscale 的連接狀態
+2. **立即顯示連接信息**：一旦 Tailscale 成功連接，立即顯示完整的狀態信息
+3. **快速顯示認證 URL**：當需要認證時，立即顯示認證 URL，無需等待倒數結束
+
+### 測試結果
+
+測試顯示，改進後的腳本能夠：
+
+- **快速檢測已連接狀態**：當 Tailscale 已連接時，腳本在幾秒內就能檢測到並顯示狀態
+- **清晰顯示網絡信息**：顯示所有連接的設備、IP 地址和狀態
+- **提供健康檢查信息**：顯示任何可能的配置問題或警告
+- **支持多種認證方式**：同時支持新舊格式的認證 URL 檢測
+
+### 實際輸出示例
+
+```
+等待 Tailscale 啟動...
+等待 Tailscale 啟動 (嘗試 1/30)...
+等待 Tailscale 啟動 (嘗試 2/30)...
+
+========================================================
+Tailscale 已成功啟動！
+Tailscale 狀態：
+100.115.135.92  tailscale            a29559089@   linux   idle; offers exit node
+100.108.20.31   cary-nuc9            a29559089@   windows offline
+100.97.147.4    cary-yudemacbook-air a29559089@   macOS   offline
+100.95.36.99    cy0014349-caryyu     a29559089@   macOS   idle; offers exit node; offline
+100.79.54.106   homeassistant        a29559089@   linux   idle; offers exit node
+100.82.0.95     ipad-mini-6th-gen-wificellular a29559089@   iOS     offline
+100.117.54.90   ipad-pro-12-9-gen-3  a29559089@   iOS     offline
+100.79.99.39    iphone               a29559089@   iOS     offline
+100.112.96.2    sh-jump              a29559089@   windows idle; offers exit node
+100.90.237.3    sz                   a29559089@   windows idle; offers exit node
+100.93.74.99    us-node              a29559089@   linux   idle; offers exit node; offline
+
+# Health check:
+#     - Tailscale failed to fetch the DNS configuration of your device: getting OS base config is not supported
+#     - getting OS base config is not supported
+#     - Some peers are advertising routes but --accept-routes is false
+========================================================
+```
+
+### 優點
+
+1. **更好的用戶體驗**：用戶可以立即看到 Tailscale 的狀態，無需等待
+2. **更容易排除故障**：顯示詳細的連接信息和健康檢查結果
+3. **減少等待時間**：一旦 Tailscale 準備就緒，立即停止等待
+4. **更清晰的狀態顯示**：明確區分已連接狀態和需要認證的情況
 
 ## 文檔
 

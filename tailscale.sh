@@ -298,39 +298,44 @@ if [ "$COMMAND" = "run" ]; then
     ATTEMPT=0
     TAILSCALE_READY=false
     
-    while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+    while [ $ATTEMPT -lt $MAX_ATTEMPTS ] && [ "$TAILSCALE_READY" = false ]; do
         ATTEMPT=$((ATTEMPT+1))
+        
+        # 嘗試獲取 Tailscale 狀態
+        STATUS_OUTPUT=$(docker exec ${CONTAINER_NAME} tailscale status 2>/dev/null)
+        STATUS_CODE=$?
         
         # 獲取容器日誌
         LOGS=$(docker logs ${CONTAINER_NAME} 2>&1)
         
-        # 檢查是否已經啟動
-        if echo "$LOGS" | grep -q "Tailscale 已啟動"; then
+        # 檢查是否已經啟動且有狀態輸出
+        if [ $STATUS_CODE -eq 0 ] && [ ! -z "$STATUS_OUTPUT" ]; then
+            echo ""
+            echo "========================================================"
+            echo "Tailscale 已成功啟動！"
+            echo "Tailscale 狀態："
+            echo "$STATUS_OUTPUT"
+            echo "========================================================"
+            echo ""
             TAILSCALE_READY=true
             break
         fi
         
-        # 檢查是否包含舊格式的認證 URL
+        # 檢查是否包含認證 URL
+        AUTH_URL=""
+        
+        # 檢查舊格式的認證 URL
         if echo "$LOGS" | grep -q "To authenticate, visit:"; then
-            # 提取並顯示認證 URL
             AUTH_URL=$(echo "$LOGS" | grep -A 3 "To authenticate, visit:" | grep "https://" | tr -d ' \t')
-            echo ""
-            echo "========================================================"
-            echo "認證 URL: $AUTH_URL"
-            echo "========================================================"
-            echo ""
-            
-            # 顯示 QR 碼
-            echo "$LOGS" | grep -A 50 "^█" | head -n 50
-            
-            TAILSCALE_READY=true
-            break
         fi
         
-        # 檢查是否包含新格式的認證 URL (control: AuthURL is)
+        # 檢查新格式的認證 URL (control: AuthURL is)
         if echo "$LOGS" | grep -q "control: AuthURL is"; then
-            # 提取並顯示認證 URL
             AUTH_URL=$(echo "$LOGS" | grep "control: AuthURL is" | sed 's/.*control: AuthURL is //')
+        fi
+        
+        # 如果找到認證 URL，則顯示
+        if [ ! -z "$AUTH_URL" ]; then
             echo ""
             echo "========================================================"
             echo "認證 URL: $AUTH_URL"
