@@ -163,6 +163,71 @@ Tailscale 狀態：
 - [Docker 使用指南](docs/docker.md)
 - [常見問題解答](docs/faq.md)
 
+## 故障排除
+
+### Docker 實驗性功能錯誤
+
+如果您在執行 `./tailscale.sh run` 時遇到以下錯誤：
+
+```
+"--platform" is only supported on a Docker daemon with experimental features enabled
+```
+
+這是因為腳本使用了 Docker 的 `--platform` 參數，但您的 Docker daemon 沒有啟用實驗性功能。您可以選擇以下兩種解決方案之一：
+
+#### 解決方案一：啟用 Docker daemon 的實驗性功能
+
+1. 編輯或創建 Docker daemon 配置文件：
+   ```bash
+   sudo mkdir -p /etc/docker
+   sudo nano /etc/docker/daemon.json
+   ```
+
+2. 在文件中添加以下內容：
+   ```json
+   {
+     "experimental": true
+   }
+   ```
+
+3. 保存文件並重啟 Docker 服務：
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+4. 重新執行 tailscale.sh 腳本：
+   ```bash
+   ./tailscale.sh run
+   ```
+
+#### 解決方案二：修改 tailscale.sh 腳本，移除 --platform 參數
+
+這是一個更簡單的解決方案，特別是如果您的系統架構與容器架構相同：
+
+1. 編輯 tailscale.sh 文件：
+   ```bash
+   nano tailscale.sh
+   ```
+
+2. 找到 docker run 命令（大約在第 300 行左右），移除 `--platform=${PLATFORM}` 這一行。修改前：
+   ```bash
+   docker run -d --name ${CONTAINER_NAME} \
+     --platform=${PLATFORM} \
+     --hostname ${CONTAINER_NAME} \
+     --restart unless-stopped \
+     ...
+   ```
+
+   修改後：
+   ```bash
+   docker run -d --name ${CONTAINER_NAME} \
+     --hostname ${CONTAINER_NAME} \
+     --restart unless-stopped \
+     ...
+   ```
+
+3. 如果您使用 `compose` 命令，也需要修改腳本中生成 docker-compose.yml 的部分，移除 `platform: $PLATFORM` 行。
+
 ## 許可證
 
 MIT 許可證
