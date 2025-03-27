@@ -128,17 +128,6 @@ Tailscale 是一個零配置 VPN，幾分鐘內就可以安裝在任何設備上
 ========================================================
 Tailscale 已成功啟動！
 Tailscale 狀態：
-100.115.135.92  tailscale            a29559089@   linux   idle; offers exit node
-100.108.20.31   cary-nuc9            a29559089@   windows offline
-100.97.147.4    cary-yudemacbook-air a29559089@   macOS   offline
-100.95.36.99    cy0014349-caryyu     a29559089@   macOS   idle; offers exit node; offline
-100.79.54.106   homeassistant        a29559089@   linux   idle; offers exit node
-100.82.0.95     ipad-mini-6th-gen-wificellular a29559089@   iOS     offline
-100.117.54.90   ipad-pro-12-9-gen-3  a29559089@   iOS     offline
-100.79.99.39    iphone               a29559089@   iOS     offline
-100.112.96.2    sh-jump              a29559089@   windows idle; offers exit node
-100.90.237.3    sz                   a29559089@   windows idle; offers exit node
-100.93.74.99    us-node              a29559089@   linux   idle; offers exit node; offline
 
 # Health check:
 #     - Tailscale failed to fetch the DNS configuration of your device: getting OS base config is not supported
